@@ -26,6 +26,47 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+INDIAN_STATES = [
+    ('Andhra Pradesh', 'Andhra Pradesh'),
+    ('Arunachal Pradesh', 'Arunachal Pradesh'),
+    ('Assam', 'Assam'),
+    ('Bihar', 'Bihar'),
+    ('Chhattisgarh', 'Chhattisgarh'),
+    ('Goa', 'Goa'),
+    ('Gujarat', 'Gujarat'),
+    ('Haryana', 'Haryana'),
+    ('Himachal Pradesh', 'Himachal Pradesh'),
+    ('Jharkhand', 'Jharkhand'),
+    ('Karnataka', 'Karnataka'),
+    ('Kerala', 'Kerala'),
+    ('Madhya Pradesh', 'Madhya Pradesh'),
+    ('Maharashtra', 'Maharashtra'),
+    ('Manipur', 'Manipur'),
+    ('Meghalaya', 'Meghalaya'),
+    ('Mizoram', 'Mizoram'),
+    ('Nagaland', 'Nagaland'),
+    ('Odisha', 'Odisha'),
+    ('Punjab', 'Punjab'),
+    ('Rajasthan', 'Rajasthan'),
+    ('Sikkim', 'Sikkim'),
+    ('Tamil Nadu', 'Tamil Nadu'),
+    ('Telangana', 'Telangana'),
+    ('Tripura', 'Tripura'),
+    ('Uttar Pradesh', 'Uttar Pradesh'),
+    ('Uttarakhand', 'Uttarakhand'),
+    ('West Bengal', 'West Bengal'),
+    # Union Territories
+    ('Andaman and Nicobar Islands', 'Andaman and Nicobar Islands'),
+    ('Chandigarh', 'Chandigarh'),
+    ('Dadra and Nagar Haveli and Daman and Diu', 'Dadra and Nagar Haveli and Daman and Diu'),
+    ('Delhi', 'Delhi'),
+    ('Jammu and Kashmir', 'Jammu and Kashmir'),
+    ('Ladakh', 'Ladakh'),
+    ('Lakshadweep', 'Lakshadweep'),
+    ('Puducherry', 'Puducherry'),
+]
+
+
 class User(AbstractBaseUser):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=50)
@@ -35,6 +76,16 @@ class User(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    phone = models.CharField(max_length=20, blank=True)
+    address_line1 = models.CharField(max_length=255, blank=True)
+    address_line2 = models.CharField(max_length=255, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100,choices=INDIAN_STATES, blank=True)
+    country = models.CharField(max_length=50, blank=True)
+    postal_code = models.CharField(max_length=20, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=10, blank=True)
+    profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
 
     objects = UserManager()
 

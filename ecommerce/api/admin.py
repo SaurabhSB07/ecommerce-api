@@ -4,11 +4,11 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 
 class UserModelAdmin(BaseUserAdmin):
-    list_display = ["id", "email", "name", "tc", "is_admin", "created_at", "updated_at"]
+    list_display = ["id", "email", "name", "tc", "is_admin","created_at", "updated_at","phone","address_line1","address_line2","city","state","country","postal_code","date_of_birth","gender","profile_image"]
     list_filter = ["is_admin", "id"]
     fieldsets = [
         (None, {"fields": ["email", "password"]}),
-        ("User Info", {"fields": ["name", "tc"]}),
+        ("User Info", {"fields": ["name", "tc","profile_image","state"]}),
         ("Permissions", {"fields": ["is_admin"]}),
     ]
     add_fieldsets = [
@@ -20,8 +20,8 @@ class UserModelAdmin(BaseUserAdmin):
             },
         ),
     ]
-    search_fields = ["email"]
-    ordering = ["email"]
+    search_fields = ["email","id"]
+    ordering = ["id"]
     filter_horizontal = []
 
 admin.site.register(User, UserModelAdmin)
