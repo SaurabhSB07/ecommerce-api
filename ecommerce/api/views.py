@@ -3,13 +3,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status,viewsets,permissions
-from .models import Product,Cart,CartIteam
+from .models import Product,Cart,CartItem,Order,OrderItem
 from django.contrib.auth import authenticate
 from .serializers import (
     UserRegisterationSerializer, UserLoginSerializer, UserProfileSerializer,
     UserChangePasswordSerializer, UserChagePasswordResetEmailSerializer, UserPasswordResetSerializer
 )
-from .serializers import ProductSerializer,CartIteamSerializer,CartSerializer
+from .serializers import ProductSerializer,CartItemSerializer,CartSerializer,OrderItemSerializer,OrderSerializer
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -91,10 +91,28 @@ class CartView(viewsets.ModelViewSet):
         return Cart.save(user=self.request.user)
 
 class CartItemView(viewsets.ModelViewSet):
-    serializer_class = CartIteamSerializer
+    serializer_class = CartItemSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return CartIteam.objects.filter(cart__user=self.request.user)    
+        return CartItem.objects.filter(cart__user=self.request.user)    
+#####################################################################
+
+class OrderViewSet(viewsets.ModelViewSet):
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)  # showing user's orders
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)  # Auto-attach the current user
+
+class OrderItemViewSet(viewsets.ModelViewSet):
+    serializer_class=OrderItemSerializer
+    permission_classes=[permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return OrderItem.objects.filter(order__user=self.request.user)  
 
     

@@ -3,13 +3,16 @@ from .views import (
     UserRegisterationView, UserLoginView, UserPasswordResetView,
     UserChagePasswordResetEmailRequestView, UserChangePasswordView, UserProfileView
 )
-from .views import ProductView,CartView,CartItemView
+from .views import ProductView,CartView,CartItemView,OrderViewSet,OrderItemViewSet
 from rest_framework.routers import DefaultRouter
 
 router =DefaultRouter()
 router.register(f'products',ProductView,basename='product')
 router.register(r'carts', CartView, basename='cart')
 router.register(r'cart-items', CartItemView, basename='cartitem')
+router.register(f'orders',OrderItemViewSet,basename='orders')
+router.register(r'order-items', OrderItemViewSet, basename='orderitem')
+
 
 urlpatterns = [
     path('register/', UserRegisterationView.as_view(), name='register'),

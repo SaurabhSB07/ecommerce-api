@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User,Product,Cart,CartIteam
+from .models import User,Product,Cart,CartItem,Order,OrderItem
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, smart_str, DjangoUnicodeDecodeError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -91,7 +91,19 @@ class CartSerializer(serializers.ModelSerializer):
         model=Cart
         exclude=["created_at"]
 
-class CartIteamSerializer(serializers.ModelSerializer):
+class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model=CartIteam
+        model=CartItem
         exclude=["added_at"]              
+######################################################
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Order 
+        exclude=["created_at"]      
+        
+class OrderItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.ReadOnlyField(source='product.name')
+    class Meta:
+        model = OrderItem
+        fields = ["id", "order", "product", "product_name", "quantity", "price_at_purchase"]
+      
