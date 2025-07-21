@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.conf import settings
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, name, tc, password=None):
@@ -104,3 +106,39 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+
+class Product(models.Model):
+    CATEGORY = [  
+    ('AC', 'Air Conditioner'),
+    ('FRIDGE', 'Refrigerator'),
+    ('TV', 'Television'),
+    ('WM', 'Washing Machine'),
+    ('LAPTOP', 'Laptop'),
+    ('SMARTPHONE', 'Smartphone'),
+    ('MICROWAVE', 'Microwave'),
+    ('FAN', 'Fan')
+    ]
+    
+    name=models.CharField(max_length=200)
+    image=models.ImageField(upload_to='products_img/',blank=True,null=True)
+    description=models.TextField()
+    price=models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    category=models.CharField(choices=CATEGORY)
+
+#############################################################
+
+class Cart(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)       
+    created_at=models.DateTimeField(auto_now_add=True)
+
+class CartIteam(models.Model):
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name='iteam')
+    product=models.ForeignKey('Product',on_delete=models.CASCADE)
+    quantity=models.PositiveIntegerField(default=1)
+    added_at=models.DateTimeField(auto_now_add=True)
+    
+
+

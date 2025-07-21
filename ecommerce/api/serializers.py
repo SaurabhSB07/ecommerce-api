@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User,Product,Cart,CartIteam
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, smart_str, DjangoUnicodeDecodeError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -80,3 +80,18 @@ class UserPasswordResetSerializer(serializers.Serializer):
         user.set_password(password)
         user.save()
         return attrs
+#####################################################
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Product 
+        exclude = ['created_at', 'is_active']   
+###################################################### 
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Cart
+        exclude=["created_at"]
+
+class CartIteamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=CartIteam
+        exclude=["added_at"]              

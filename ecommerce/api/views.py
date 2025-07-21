@@ -2,12 +2,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import status
+from rest_framework import status,viewsets,permissions
+from .models import Product,Cart,CartIteam
 from django.contrib.auth import authenticate
 from .serializers import (
     UserRegisterationSerializer, UserLoginSerializer, UserProfileSerializer,
     UserChangePasswordSerializer, UserChagePasswordResetEmailSerializer, UserPasswordResetSerializer
 )
+from .serializers import ProductSerializer,CartIteamSerializer,CartSerializer
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -67,3 +69,32 @@ class UserPasswordResetView(APIView):                       # Handles reset link
         serializer = UserPasswordResetSerializer(data=request.data, context={'uid': uid, 'token': token})
         serializer.is_valid(raise_exception=True)
         return Response({'msg': 'Password Reset Successfully'}, status=status.HTTP_200_OK)
+
+###########################################################
+
+class ProductView(viewsets.ModelViewSet):
+    queryset=Product.objects.all()
+    serializer_class=ProductSerializer
+
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [permissions.IsAdminUser()]
+        return [permissions.AllowAny()] 
+###############################################################
+class CartView(viewsets.ModelViewSet):
+    queryset=Cart.objects.all()
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+    def perform_create(self, serializer):
+        return Cart.save(user=self.request.user)
+
+class CartItemView(viewsets.ModelViewSet):
+    serializer_class = CartIteamSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return CartIteam.objects.filter(cart__user=self.request.user)    
+
+    

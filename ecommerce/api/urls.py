@@ -1,8 +1,15 @@
-from django.urls import path
+from django.urls import path,include
 from .views import (
     UserRegisterationView, UserLoginView, UserPasswordResetView,
     UserChagePasswordResetEmailRequestView, UserChangePasswordView, UserProfileView
 )
+from .views import ProductView,CartView,CartItemView
+from rest_framework.routers import DefaultRouter
+
+router =DefaultRouter()
+router.register(f'products',ProductView,basename='product')
+router.register(r'carts', CartView, basename='cart')
+router.register(r'cart-items', CartItemView, basename='cartitem')
 
 urlpatterns = [
     path('register/', UserRegisterationView.as_view(), name='register'),
@@ -12,3 +19,5 @@ urlpatterns = [
     path('reset-password-email-request/', UserChagePasswordResetEmailRequestView.as_view(), name="reset-password-email-request"),
     path('reset-password/<uid>/<token>/', UserPasswordResetView.as_view(), name="reset-password"),
 ]
+
+urlpatterns += router.urls
