@@ -87,13 +87,13 @@ class ProductSerializer(serializers.ModelSerializer):
         exclude = ['created_at', 'is_active']   
 ###################################################### 
 class CartItemSerializer(serializers.ModelSerializer):
-    product_name = serializers.ReadOnlyField(source='product.name')
+    product_name = serializers.ReadOnlyField(source='product.name') # Show product name in API
     class Meta:
         model = CartItem
         fields = ["id", "product", "product_name", "quantity","cart"]
 
 class CartSerializer(serializers.ModelSerializer):
-    items = CartItemSerializer(many=True, read_only=True) 
+    items = CartItemSerializer(many=True, read_only=True)  # Nest cart items inside cart response
     user_email = serializers.ReadOnlyField(source="user.email")
 
     class Meta:
