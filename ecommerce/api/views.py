@@ -10,6 +10,8 @@ from .serializers import (
     UserChangePasswordSerializer, UserChagePasswordResetEmailSerializer, UserPasswordResetSerializer
 )
 from .serializers import ProductSerializer,CartItemSerializer,CartSerializer,OrderItemSerializer,OrderSerializer,ReviewSerializer
+from rest_framework import filters
+
 
 
 
@@ -77,6 +79,8 @@ class UserPasswordResetView(APIView):                       # Handles reset link
 class ProductView(viewsets.ModelViewSet):
     queryset=Product.objects.all()
     serializer_class=ProductSerializer
+    filter_backends = [filters.SearchFilter]   #searchfilter for product
+    search_fields = ['name', 'description']
 
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update", "destroy"]:
