@@ -178,9 +178,9 @@ class Review(models.Model):
         ('4','4'),
         ('5','5')
     ]
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')  # (plural: reviews, since user can write many)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user')  # (plural: reviews, since user can write many)
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='reviews')
-    review = models.CharField(choices=REVIEW_CHOICES, max_length=1, blank=True)
+    rating = models.CharField(choices=REVIEW_CHOICES, max_length=1, blank=True)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

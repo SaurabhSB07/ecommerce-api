@@ -67,7 +67,7 @@ class ReviewInline(admin.TabularInline):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display=["user","product","review","description",'created_at']
+    list_display=["user","product","rating","description",'created_at']
     list_filter=['product']
     search_fields=['product__name',"user__name"]
     filter_horizontal=[]

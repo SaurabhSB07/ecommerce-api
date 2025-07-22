@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User,Product,Cart,CartItem,Order,OrderItem
+from .models import User,Product,Cart,CartItem,Order,OrderItem,Review
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, smart_str, DjangoUnicodeDecodeError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -81,7 +81,15 @@ class UserPasswordResetSerializer(serializers.Serializer):
         user.save()
         return attrs
 #####################################################
+class ReviewSerializer(serializers.ModelSerializer):
+    customer_name=serializers.ReadOnlyField(source='user.name')
+    class Meta:
+        model=Review
+        fields=["customer_name",'rating','description']
+        read_only_fields = ["user"]
+#--------------------------------------------------------------#
 class ProductSerializer(serializers.ModelSerializer):
+    reviews = ReviewSerializer(many=True, read_only=True)
     class Meta:
         model=Product 
         exclude = ['created_at', 'is_active']   
@@ -112,5 +120,9 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = ["id", "order", "product", "product_name", "quantity", "price_at_purchase"]
         product_name = serializers.ReadOnlyField(source="product.name")
-        
+######################################################################### 
+
+
+
+
       

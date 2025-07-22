@@ -3,13 +3,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status,viewsets,permissions
-from .models import Product,Cart,CartItem,Order,OrderItem
+from .models import Product,Cart,CartItem,Order,OrderItem,Review
 from django.contrib.auth import authenticate
 from .serializers import (
     UserRegisterationSerializer, UserLoginSerializer, UserProfileSerializer,
     UserChangePasswordSerializer, UserChagePasswordResetEmailSerializer, UserPasswordResetSerializer
 )
-from .serializers import ProductSerializer,CartItemSerializer,CartSerializer,OrderItemSerializer,OrderSerializer
+from .serializers import ProductSerializer,CartItemSerializer,CartSerializer,OrderItemSerializer,OrderSerializer,ReviewSerializer
+
+
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -81,25 +83,36 @@ class ProductView(viewsets.ModelViewSet):
             return [permissions.IsAdminUser()]
         return [permissions.AllowAny()] 
 ###############################################################
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+
 class CartView(viewsets.ModelViewSet):
-    queryset=Cart.objects.all()
-    serializer_class=CartSerializer
-    permission_classes=[permissions.IsAuthenticated]
-    
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+    permission_classes = [IsAuthenticated]
+
     def get_queryset(self):
         user = self.request.user
-        if user.is_staff:  # or user.is_superuser
-            return Cart.objects.all()  # Admin/staff can see all carts
-        return Cart.objects.filter(user=user)
+        if user.is_staff:
+            return Cart.objects.all()  # Admin sees all carts
+        return Cart.objects.filter(user=user)  # fro normal users see only their carts
+
     def perform_create(self, serializer):
-        return serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user)  # Auto-assign cart to logged in user
+
 
 class CartItemView(viewsets.ModelViewSet):
     serializer_class = CartItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return CartItem.objects.filter(cart__user=self.request.user)    
+        return CartItem.objects.filter(cart__user=self.request.user)  # Only user's cart items
+
+    def perform_create(self, serializer):
+        cart = Cart.objects.filter(user=self.request.user).first()
+        if not cart:
+            cart = Cart.objects.create(user=self.request.user)  # Create cart if none exists
+        serializer.save(cart=cart)  # Automatically link CartItem to the user's cart   
 #####################################################################
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -118,5 +131,12 @@ class OrderItemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return OrderItem.objects.filter(order__user=self.request.user)  
+####################################################################################  
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class=ReviewSerializer
+    permission_classes=[permissions.IsAuthenticated]
 
-    
+    def get_queryset(self):
+        return Review.objects.all() #when hit get , user will get to see all review below the product
+    def perform_create(self, serializer):
+        return serializer.save(user=self.request.user)#for posting his own review , auto attached curr. user name 
