@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Product,Cart,CartItem,Order,OrderItem
+from .models import Product,Cart,CartItem,Order,OrderItem,Review
 
 class UserModelAdmin(BaseUserAdmin):
     list_display = ["id", "email", "name", "tc", "is_admin","created_at", "updated_at","phone","address_line1","address_line2","city","state","country","postal_code","date_of_birth","gender","profile_image"]
@@ -26,9 +26,13 @@ class UserModelAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserModelAdmin)
 
+class ReviewInline(admin.TabularInline):  
+    model = Review
+    extra = 0 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    inlines = [ReviewInline]
     list_display=["name", "category","description","image","price", "stock", "is_active","created_at"]
     list_filter=["category","name","price"]
     ordering = ["created_at"]
@@ -56,3 +60,14 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display = ("id", "order", "product", "quantity", "price_at_purchase")
     list_filter = ("product",)
     search_fields = ("order__id", "product__name")
+
+class ReviewInline(admin.TabularInline):  
+    model = Review
+    extra = 0 
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display=["user","product","review","description",'created_at']
+    list_filter=['product']
+    search_fields=['product__name',"user__name"]
+    filter_horizontal=[]

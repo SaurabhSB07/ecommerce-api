@@ -128,6 +128,9 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     category=models.CharField(choices=CATEGORY)
 
+    def __str__(self):
+        return self.name
+
 #############################################################
 
 class Cart(models.Model):
@@ -167,3 +170,19 @@ class OrderItem(models.Model):
     def __str__(self):
         return f'{self.quantity} x {self.product.name} in {self.order}'
 ###########################################################################
+class Review(models.Model):
+    REVIEW_CHOICES=[
+        ('1','1'),
+        ('2','2'),
+        ('3','3'),
+        ('4','4'),
+        ('5','5')
+    ]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')  # (plural: reviews, since user can write many)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='reviews')
+    review = models.CharField(choices=REVIEW_CHOICES, max_length=1, blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.review} stars by {self.user} on {self.product}"

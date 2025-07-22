@@ -86,15 +86,20 @@ class ProductSerializer(serializers.ModelSerializer):
         model=Product 
         exclude = ['created_at', 'is_active']   
 ###################################################### 
-class CartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=Cart
-        exclude=["created_at"]
-
 class CartItemSerializer(serializers.ModelSerializer):
+    product_name = serializers.ReadOnlyField(source='product.name')
     class Meta:
-        model=CartItem
-        exclude=["added_at"]              
+        model = CartItem
+        fields = ["id", "product", "product_name", "quantity","cart"]
+
+class CartSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(many=True, read_only=True) 
+    user_email = serializers.ReadOnlyField(source="user.email")
+
+    class Meta:
+        model = Cart
+        fields = ["id", "user", "items","user_email"]
+        read_only_fields = ["user"]
 ######################################################
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -106,4 +111,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ["id", "order", "product", "product_name", "quantity", "price_at_purchase"]
+        product_name = serializers.ReadOnlyField(source="product.name")
+        
       

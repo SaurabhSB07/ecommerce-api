@@ -83,12 +83,16 @@ class ProductView(viewsets.ModelViewSet):
 ###############################################################
 class CartView(viewsets.ModelViewSet):
     queryset=Cart.objects.all()
+    serializer_class=CartSerializer
     permission_classes=[permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return Cart.objects.filter(user=self.request.user)
+        user = self.request.user
+        if user.is_staff:  # or user.is_superuser
+            return Cart.objects.all()  # Admin/staff can see all carts
+        return Cart.objects.filter(user=user)
     def perform_create(self, serializer):
-        return Cart.save(user=self.request.user)
+        return serializer.save(user=self.request.user)
 
 class CartItemView(viewsets.ModelViewSet):
     serializer_class = CartItemSerializer
