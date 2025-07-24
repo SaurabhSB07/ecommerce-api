@@ -3,7 +3,7 @@ from .models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import Product,Cart,CartItem,Order,OrderItem,Review
 
-class UserModelAdmin(BaseUserAdmin):
+class UserModelAdmin(BaseUserAdmin):  #This is a special admin model that Django provides for managing users. It knows how to handle authentication-specific things (like changing passwords, permissions, etc)
     list_display = ["id", "email", "name", "tc", "is_admin","created_at", "updated_at","phone","address_line1","address_line2","city","state","country","postal_code","date_of_birth","gender","profile_image"]
     list_filter = ["is_admin", "id"]
     fieldsets = [

@@ -4,7 +4,7 @@ from django.conf import settings
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, name, tc, password=None):
+    def create_user(self, email, name, tc, password=None):  #method to create custom user
         if not email:
             raise ValueError("Users must have an email address")
         user = self.model(
@@ -12,7 +12,7 @@ class UserManager(BaseUserManager):
             name=name,
             tc=tc
         )
-        user.set_password(password)
+        user.set_password(password) #hasing 
         user.save(using=self._db)
         return user
 
@@ -89,7 +89,7 @@ class User(AbstractBaseUser):
     gender = models.CharField(max_length=10, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
 
-    objects = UserManager()
+    objects = UserManager()  #model linking done here 
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name", "tc"]

@@ -39,7 +39,7 @@ class UserLoginView(APIView):
         if serializer.is_valid():
             email = serializer.validated_data['email']
             password = serializer.validated_data['password']
-            user = authenticate(email=email, password=password)
+            user = authenticate(email=email, password=password) #check if db and i/p data match 
             if user is not None:
                 token = get_tokens_for_user(user)
                 return Response({'token': token, "msg": 'Login Successful'}, status=status.HTTP_200_OK)
@@ -90,6 +90,19 @@ class ProductView(viewsets.ModelViewSet):
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
+class CartItemView(viewsets.ModelViewSet):
+    serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return CartItem.objects.filter(cart__user=self.request.user)  # Only user's cart items
+
+    def perform_create(self, serializer):
+        cart = Cart.objects.filter(user=self.request.user).first()
+        if not cart:
+            cart = Cart.objects.create(user=self.request.user)  # Create cart if none exists
+        serializer.save(cart=cart)  # Automatically link CartItem to the user's cart
+
 class CartView(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
@@ -102,21 +115,7 @@ class CartView(viewsets.ModelViewSet):
         return Cart.objects.filter(user=user)  # fro normal users see only their carts
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)  # Auto-assign cart to logged in user
-
-
-class CartItemView(viewsets.ModelViewSet):
-    serializer_class = CartItemSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return CartItem.objects.filter(cart__user=self.request.user)  # Only user's cart items
-
-    def perform_create(self, serializer):
-        cart = Cart.objects.filter(user=self.request.user).first()
-        if not cart:
-            cart = Cart.objects.create(user=self.request.user)  # Create cart if none exists
-        serializer.save(cart=cart)  # Automatically link CartItem to the user's cart   
+        serializer.save(user=self.request.user)  # Auto-assign cart to logged in user   
 #####################################################################
 
 class OrderViewSet(viewsets.ModelViewSet):
