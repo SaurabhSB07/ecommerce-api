@@ -185,4 +185,4 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.review} stars by {self.user} on {self.product}"
+        return f"{self.rating} stars by {self.user} on {self.product}"
